@@ -21,9 +21,7 @@ class Minesweeper:
         for row in range(dim):
             self.env.append(list())
             for col in range(dim):
-                print(type(self.env[row]))
                 self.env[row].append(Minecell())
-                print(type(self.env[row][col]))
 
         # setting mines in random places
         for i in range(num_mines):
