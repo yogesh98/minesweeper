@@ -119,4 +119,52 @@ class Minesweeper:
     def flag(self, row, col):
         self.env[row][col].flag = True
 
-    def draw_game(self):
+    def draw_game(self,screen):
+        size_factor = 0
+        if self.dim < 16:
+            size_factor = 64
+            d = pygame.image.load("Assets/bd.png")
+            f = pygame.image.load("Assets/bf.png")
+            m = pygame.image.load("Assets/bm.png")
+            p = dict()
+            p[1] = pygame.image.load("Assets/bp1.png")
+            p[2] = pygame.image.load("Assets/bp2.png")
+            p[3] = pygame.image.load("Assets/bp3.png")
+            p[4] = pygame.image.load("Assets/bp4.png")
+            p[5] = pygame.image.load("Assets/bp5.png")
+            p[6] = pygame.image.load("Assets/bp6.png")
+            p[7] = pygame.image.load("Assets/bp7.png")
+            p[8] = pygame.image.load("Assets/bp8.png")
+        else:
+            size_factor = 32
+            d = pygame.image.load("Assets/sd.png")
+            f = pygame.image.load("Assets/sf.png")
+            m = pygame.image.load("Assets/sm.png")
+            p = dict()
+            p[1] = pygame.image.load("Assets/sp1.png")
+            p[2] = pygame.image.load("Assets/sp2.png")
+            p[3] = pygame.image.load("Assets/sp3.png")
+            p[4] = pygame.image.load("Assets/sp4.png")
+            p[5] = pygame.image.load("Assets/sp5.png")
+            p[6] = pygame.image.load("Assets/sp6.png")
+            p[7] = pygame.image.load("Assets/sp7.png")
+            p[8] = pygame.image.load("Assets/sp8.png")
+
+        for row in range(len(self.env)):
+            for col in range(len(self.env)):
+                cell = self.env[row][col]
+                if not cell.queried:
+                    screen.blit(d, (row * size_factor, col * size_factor))
+                elif cell.mine:
+                    screen.blit(m, (row * size_factor, col * size_factor))
+                elif cell.flag:
+                    screen.blit(f, (row * size_factor, col * size_factor))
+                else:
+                    screen.blit(p[cell.value], (row * size_factor, col * size_factor))
+
+
+
+
+
+
+
