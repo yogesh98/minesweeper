@@ -34,13 +34,13 @@ class Minesweeper:
 
         # setting mines in random places
         for i in num_mines:
-            mineset = False
-            while not mineset:
+            mine_set = False
+            while not mine_set:
                 row = randint(0, dim-1)
                 col = randint(0, dim-1)
                 if not self.env[row][col].mine:
                     self.env[row][col] = True
-                    mineset = True
+                    mine_set = True
 
         # Setting clue for each cell
         for row in dim:
@@ -119,3 +119,4 @@ class Minesweeper:
     def flag(self, row, col):
         self.env[row][col].flag = True
 
+    def draw_game(self):
