@@ -6,7 +6,7 @@ class Minecell:
     queried = False
 
     def __init__(self):
-        None
+        pass
 
     def __str__(self):
         return self.value

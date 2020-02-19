@@ -2,13 +2,6 @@ from minecell import Minecell
 from random import randint
 import pygame
 
-WHITE = (255, 255, 255)
-GRAY = (128, 128, 128)
-BLACK = (0, 0, 0)
-RED = (255, 0, 00)
-GREEN = (0, 250, 0)
-BLUE = (0, 0, 255)
-
 
 class Minesweeper:
     env = []
@@ -16,35 +9,35 @@ class Minesweeper:
     num_mines = 0
 
     def __init__(self, dim, num_mines):
-        # Graphics Stuff
-
         # making sure mines will fit
         if num_mines > dim**2:
             raise ValueError("Number of Mines Too High!!")
 
-        self.env = []
+        self.env = list()
         self.dim = dim
         self.num_mines = num_mines
 
         # creating minesweeper environment
-        for row in dim:
-            self.env[row].append([])
-            for col in dim:
+        for row in range(dim):
+            self.env.append(list())
+            for col in range(dim):
+                print(type(self.env[row]))
                 self.env[row].append(Minecell())
+                print(type(self.env[row][col]))
 
         # setting mines in random places
-        for i in num_mines:
+        for i in range(num_mines):
             mine_set = False
             while not mine_set:
                 row = randint(0, dim-1)
                 col = randint(0, dim-1)
                 if not self.env[row][col].mine:
-                    self.env[row][col] = True
+                    self.env[row][col].mine = True
                     mine_set = True
 
         # Setting clue for each cell
-        for row in dim:
-            for col in dim:
+        for row in range(dim):
+            for col in range(dim):
                 mine_counter = 0
 
                 # Setting clue if cell contain mine to -1
@@ -119,8 +112,7 @@ class Minesweeper:
     def flag(self, row, col):
         self.env[row][col].flag = True
 
-    def draw_game(self,screen):
-        size_factor = 0
+    def draw(self):
         if self.dim < 16:
             size_factor = 64
             d = pygame.image.load("Assets/bd.png")
@@ -150,19 +142,19 @@ class Minesweeper:
             p[7] = pygame.image.load("Assets/sp7.png")
             p[8] = pygame.image.load("Assets/sp8.png")
 
+        surface = pygame.Surface((self.dim * size_factor, self.dim * size_factor))
         for row in range(len(self.env)):
             for col in range(len(self.env)):
                 cell = self.env[row][col]
                 if not cell.queried:
-                    screen.blit(d, (row * size_factor, col * size_factor))
+                    surface.blit(d, (row * size_factor, col * size_factor))
                 elif cell.mine:
-                    screen.blit(m, (row * size_factor, col * size_factor))
+                    surface.blit(m, (row * size_factor, col * size_factor))
                 elif cell.flag:
-                    screen.blit(f, (row * size_factor, col * size_factor))
+                    surface.blit(f, (row * size_factor, col * size_factor))
                 else:
-                    screen.blit(p[cell.value], (row * size_factor, col * size_factor))
-
-
+                    surface.blit(p[cell.value], (row * size_factor, col * size_factor))
+        return surface
 
 
 
