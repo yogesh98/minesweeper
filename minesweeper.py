@@ -4,24 +4,25 @@ import pygame
 
 
 class Minesweeper:
-    env = []
-    dim = 0
-    num_mines = 0
+    __env = []
+    __mines = []
+    _dim = 0
+    _num_mines = 0
 
     def __init__(self, dim, num_mines):
         # making sure mines will fit
         if num_mines > dim**2:
             raise ValueError("Number of Mines Too High!!")
 
-        self.env = list()
-        self.dim = dim
-        self.num_mines = num_mines
+        self.__env = list()
+        self._dim = dim
+        self._num_mines = num_mines
 
         # creating minesweeper environment
         for row in range(dim):
-            self.env.append(list())
+            self.__env.append(list())
             for col in range(dim):
-                self.env[row].append(Minecell())
+                self.__env[row].append(Minecell())
 
         # setting mines in random places
         for i in range(num_mines):
@@ -29,8 +30,9 @@ class Minesweeper:
             while not mine_set:
                 row = randint(0, dim-1)
                 col = randint(0, dim-1)
-                if not self.env[row][col].mine:
-                    self.env[row][col].mine = True
+                if not self.__env[row][col].mine:
+                    self.__env[row][col].mine = True
+                    self.mines.append(self.__env[row][col])
                     mine_set = True
 
         # Setting clue for each cell
@@ -39,54 +41,61 @@ class Minesweeper:
                 mine_counter = 0
 
                 # Setting clue if cell contain mine to -1
-                if self.env[row][col].mine:
-                    self.env[row][col].value = -1
+                if self.__env[row][col].mine:
+                    self.__env[row][col].value = -1
                     continue
 
                 # incrementing mine count for above and to the left cell
-                if row - 1 >= 0 and col - 1 >= 0 and self.env[row - 1][col - 1].mine:
+                if row - 1 >= 0 and col - 1 >= 0 and self.__env[row - 1][col - 1].mine:
                     mine_counter += 1
 
 
                 # incrementing mine count for above cell
-                if row - 1 >= 0 and col < dim and self.env[row - 1][col].mine:
+                if row - 1 >= 0 and col < dim and self.__env[row - 1][col].mine:
                     mine_counter += 1
 
                 # incrementing mine count for above and to the right cell
-                if row - 1 >= 0 and col + 1 < dim and self.env[row - 1][col + 1].mine:
+                if row - 1 >= 0 and col + 1 < dim and self.__env[row - 1][col + 1].mine:
                     mine_counter += 1
 
                 # incrementing mine count for the left cell
-                if row >= 0 and col - 1 >= 0 and self.env[row][col - 1].mine:
+                if row >= 0 and col - 1 >= 0 and self.__env[row][col - 1].mine:
                     mine_counter += 1
 
                 # incrementing mine count for the right cell
-                if row >= 0 and col + 1 < dim and self.env[row][col + 1].mine:
+                if row >= 0 and col + 1 < dim and self.__env[row][col + 1].mine:
                     mine_counter += 1
 
 
                 # incrementing mine count for below and to the left cell
-                if row + 1 < dim and col - 1 >= 0 and self.env[row + 1][col - 1].mine:
+                if row + 1 < dim and col - 1 >= 0 and self.__env[row + 1][col - 1].mine:
                     mine_counter += 1
 
                 # incrementing mine count for below cell
-                if row + 1 < dim and col >= 0 and self.env[row + 1][col].mine:
+                if row + 1 < dim and col >= 0 and self.__env[row + 1][col].mine:
                     mine_counter += 1
 
                 # incrementing mine count for below and to the right cell
-                if row + 1 < dim and col + 1 < dim and self.env[row + 1][col + 1].mine:
+                if row + 1 < dim and col + 1 < dim and self.__env[row + 1][col + 1].mine:
                     mine_counter += 1
 
                 # setting mine count to the value of the cell
-                self.env[row][col].value = mine_counter
+                self.__env[row][col].value = mine_counter
 
     # function to query a cell that agent will use
     def query(self, row, col):
-        return self.env[row][col].query()
+        return self.__env[row][col].query()
 
     # function to flag a cell that agent will use
     def flag(self, row, col):
-        self.env[row][col].flag()
+        self.__env[row][col].flag()
+
+    def calculate_score(self):
+        count = 0
+        for cell in self.__mines:
+            if cell.flagged and not cell.queried:
+                count += 1
+        return 100 - ((count / self._num_mines) * 100)
 
     def draw(self, screen_size):
         d = pygame.image.load("Assets/bd.png")
@@ -103,13 +112,13 @@ class Minesweeper:
         p[7] = pygame.image.load("Assets/bp7.png")
         p[8] = pygame.image.load("Assets/bp8.png")
 
-        img_size = int(screen_size / self.dim)
-        surface_dim = img_size * self.dim
+        img_size = int(screen_size / self._dim)
+        surface_dim = img_size * self._dim
         surface = pygame.Surface((surface_dim, surface_dim))
 
-        for row in range(len(self.env)):
-            for col in range(len(self.env)):
-                cell = self.env[row][col]
+        for row in range(len(self.__env)):
+            for col in range(len(self.__env)):
+                cell = self.__env[row][col]
                 if not cell.queried and not cell.flagged:
                     surface.blit(pygame.transform.smoothscale(d, (img_size, img_size)), (row * img_size, col * img_size))
                 elif cell.mine and cell.queried:
