@@ -2,7 +2,7 @@ class Minecell:
 
     mine = False
     value = -1
-    flag = False
+    flagged = False
     queried = False
 
     def __init__(self):
@@ -14,3 +14,10 @@ class Minecell:
     def query(self):
         self.queried = True
         return self.mine, self.value
+
+    def flag(self):
+        if not self.queried:
+            self.flagged = True
+
+    def unflag(self):
+        self.flagged = False

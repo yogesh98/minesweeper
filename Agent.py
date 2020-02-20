@@ -1,4 +1,5 @@
 import pygame
+import time
 from minesweeper import Minesweeper
 
 WHITE = (255, 255, 255)
@@ -11,21 +12,27 @@ BLUE = (0, 0, 255)
 ORIGIN = (0,0)
 
 pygame.init()
-screen = pygame.display.set_mode((100, 100))
+screen_size = 960
+screen = pygame.display.set_mode((screen_size, screen_size))
 screen.fill(WHITE)
 pygame.display.flip()
 pygame.event.get()
 
-
+def game_update(game):
+    game_updated = game.draw(screen_size)
+    pygame.display.set_mode(game_updated.get_size())
+    screen.blit(game_updated, ORIGIN)
+    pygame.display.update()
 
 if __name__ == '__main__':
 
-    game = Minesweeper(30, 50)
-    game_update = game.draw()
-    pygame.display.set_mode(game_update.get_size())
-    screen.blit(game_update, ORIGIN)
-    pygame.display.update()
-
+    size = 30
+    game = Minesweeper(size, 70)
+    game_update(game)
+    for i in range(size):
+        for x in range(size):
+            game.query(i, x)
+    game_update(game)
 
     running = True
     while running:
@@ -34,3 +41,5 @@ if __name__ == '__main__':
                 running = False
 
 
+    pygame.quit()
+    quit()
