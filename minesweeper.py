@@ -32,7 +32,7 @@ class Minesweeper:
                 col = randint(0, dim-1)
                 if not self.__env[row][col].mine:
                     self.__env[row][col].mine = True
-                    self.mines.append(self.__env[row][col])
+                    self.__mines.append(self.__env[row][col])
                     mine_set = True
 
         # Setting clue for each cell
