@@ -7,6 +7,7 @@ class Minesweeper:
     __mines = []
     _dim = 0
     _num_mines = 0
+    __counter = 0
 
     def __init__(self, dim, num_mines):
         # making sure mines will fit
@@ -83,10 +84,12 @@ class Minesweeper:
 
     # function to query a cell that agent will use
     def query(self, row, col):
+        self.__counter += 1
         return self.__env[row][col].query()
 
     # function to flag a cell that agent will use
     def flag(self, row, col):
+        self.__counter += 1
         self.__env[row][col].flag()
 
     def calculate_score(self):
@@ -95,6 +98,9 @@ class Minesweeper:
             if cell.flagged and not cell.queried:
                 count += 1
         return 100 - ((count / self._num_mines) * 100)
+
+    def game_over(self):
+        return self.__counter == self._dim**2
 
     def draw(self, screen_size):
         d = pygame.image.load("Assets/bd.png")

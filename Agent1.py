@@ -1,5 +1,5 @@
 import pygame
-import time
+import random
 from minesweeper import Minesweeper
 from knowledgebase import A1 as KB
 
@@ -26,6 +26,42 @@ def agent1(game):
 
     #initializing knowledge base
     kb = KB(game)
+    game_over = False
+    id_mine = []
+    id_safe = []
+    while not game_over:
+        if len(id_safe) > 0:
+            current = id_safe[0]
+            id_safe.remove(current)
+
+            query = game.query(current.row, current.col)
+            kb.update(current.row, current.col, query[1], query[0])
+            game_update(game)
+
+            if current.clue - current.num_mines == current.num_covered:
+                for neighbor in current.neighbors:
+                    if neighbor.covered:
+                        id_mine.append(neighbor)
+            elif len(current.neighbors) - current.clue - current.num_safe == current.num_covered:
+                for neighbor in current.neighbors:
+                    if neighbor.covered and neighbor not in id_safe:
+                        id_safe.append(neighbor)
+
+            for cell in id_mine:
+                game.flag(cell.row, cell.col)
+                kb.update(cell.row, cell.col, -1, True)
+                id_mine.remove(cell)
+        else:
+            while True:
+                row = random.randint(0, game._dim - 1)
+                col = random.randint(0, game._dim - 1)
+
+                if kb.knowledge_base[row][col].covered:
+                    id_safe.append(kb.knowledge_base[row][col])
+                    break
+        if game.game_over():
+            print(game.calculate_score())
+            game_over = True
 
     pass
 
@@ -40,19 +76,14 @@ def game_update(game):
 if __name__ == '__main__':
 
     size = 30
-    game = Minesweeper(size, 70)
-    agent1(game)
+    game = Minesweeper(size, 75)
     game_update(game)
-    for i in range(size):
-        for x in range(size):
-            game.query(i, x)
-    game_update(game)
-
     running = True
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+        agent1(game)
 
 
     pygame.quit()
