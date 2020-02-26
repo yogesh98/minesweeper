@@ -1,4 +1,3 @@
-from minecell import Minecell
 from random import randint
 import pygame
 
@@ -129,49 +128,29 @@ class Minesweeper:
                     surface.blit(pygame.transform.smoothscale(p[cell.value], (img_size, img_size)), (row * img_size, col * img_size))
         return surface
 
-    # def draw(self):
-    #     if self.dim < 16:
-    #         size_factor = 64
-    #         d = pygame.image.load("Assets/bd.png")
-    #         f = pygame.image.load("Assets/bf.png")
-    #         m = pygame.image.load("Assets/bm.png")
-    #         p = dict()
-    #         p[1] = pygame.image.load("Assets/bp1.png")
-    #         p[2] = pygame.image.load("Assets/bp2.png")
-    #         p[3] = pygame.image.load("Assets/bp3.png")
-    #         p[4] = pygame.image.load("Assets/bp4.png")
-    #         p[5] = pygame.image.load("Assets/bp5.png")
-    #         p[6] = pygame.image.load("Assets/bp6.png")
-    #         p[7] = pygame.image.load("Assets/bp7.png")
-    #         p[8] = pygame.image.load("Assets/bp8.png")
-    #     else:
-    #         size_factor = 32
-    #         d = pygame.image.load("Assets/sd.png")
-    #         f = pygame.image.load("Assets/sf.png")
-    #         m = pygame.image.load("Assets/sm.png")
-    #         p = dict()
-    #         p[1] = pygame.image.load("Assets/sp1.png")
-    #         p[2] = pygame.image.load("Assets/sp2.png")
-    #         p[3] = pygame.image.load("Assets/sp3.png")
-    #         p[4] = pygame.image.load("Assets/sp4.png")
-    #         p[5] = pygame.image.load("Assets/sp5.png")
-    #         p[6] = pygame.image.load("Assets/sp6.png")
-    #         p[7] = pygame.image.load("Assets/sp7.png")
-    #         p[8] = pygame.image.load("Assets/sp8.png")
-    #
-    #     surface = pygame.Surface((self.dim * size_factor, self.dim * size_factor))
-    #     for row in range(len(self.env)):
-    #         for col in range(len(self.env)):
-    #             cell = self.env[row][col]
-    #             if not cell.queried:
-    #                 surface.blit(d, (row * size_factor, col * size_factor))
-    #             elif cell.mine:
-    #                 surface.blit(m, (row * size_factor, col * size_factor))
-    #             elif cell.flag:
-    #                 surface.blit(f, (row * size_factor, col * size_factor))
-    #             else:
-    #                 surface.blit(p[cell.value], (row * size_factor, col * size_factor))
-    #     return surface
+class Minecell:
+
+    mine = False
+    value = -1
+    flagged = False
+    queried = False
+
+    def __init__(self):
+        pass
+
+    def __str__(self):
+        return self.value
+
+    def query(self):
+        self.queried = True
+        return self.mine, self.value
+
+    def flag(self):
+        if not self.queried:
+            self.flagged = True
+
+    def unflag(self):
+        self.flagged = False
 
 
 

@@ -1,7 +1,7 @@
 import pygame
 import time
 from minesweeper import Minesweeper
-from knowledgebase import A1
+from knowledgebase import A1 as KB
 
 WHITE = (255, 255, 255)
 GRAY = (128, 128, 128)
@@ -25,7 +25,7 @@ def agent1(game):
     global kb
 
     #initializing knowledge base
-    kb = A1(game)
+    kb = KB(game)
 
     pass
 

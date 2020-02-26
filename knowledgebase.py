@@ -67,9 +67,55 @@ class A1_cell:
         self.num_mines = num_mines
         self.num_covered = num_covered
 
-class A2:
-    safe = []
-    unsafe = []
 
-    def __init__(self):
-        pass
+def subset(first, second):
+    one = set(first[1:])
+    two = set(second[1:])
+
+    if one.issubset(two):
+        return 1
+    if two.issubset(one):
+        return 2
+    return 0
+
+
+# class A2:
+#     safe = []
+#     unsafe = []
+#
+#     def __init__(self):
+#         pass
+#
+#     def simplify(self):
+#         # goes through each clue in unsafe to see if it is a subset of any other unsafe clue
+#         # if it is it will simplify both clues. For example if there are 2 mines in cells 1, 2 ,3
+#         # and another clue tells us there is 1 mine in cells 2,3 we can simplify this to
+#         # 1 mine in cell 1 (then go ahead and flag) and 1 mine in either cell 2 or 3
+#         for i in range(len(self.unsafe)):
+#             for j in range(i, len(self.unsafe)):
+#                 # checking if it is a subset
+#                 issubset = subset(self.unsafe[i], self.unsafe[j])
+#
+#                 # assigning first one as subset if it is
+#                 if issubset == 1:
+#                     subscope = self.unsafe[i]
+#                     outerscope = self.unsafe[j]
+#
+#                 # assigning second one as subset if it is
+#                 elif issubset == 2:
+#                     subscope = self.unsafe[j]
+#                     outerscope = self.unsafe[i]
+#                 else:
+#                     continue
+#
+#                 # doing simplification of both of the clues
+#                 outerscope[0] = outerscope[0] - subscope[0]
+#                 for cell in subscope[1:]:
+#                     outerscope.remove(cell)
+#
+#         # next checking if any clue in unsafe has 0 mines in it, if so it moves that over to safe
+#         for i in range(len(self.unsafe)):
+#             if self.unsafe[i][0] == 0:
+#                 put_in_safe = self.unsafe.pop(i)
+#                 for j in range(1, len(put_in_safe)):
+#                     self.safe.append(put_in_safe[j])
