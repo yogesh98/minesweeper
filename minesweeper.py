@@ -17,11 +17,6 @@ p[8] = pygame.image.load("Assets/bp8.png")
 
 
 class Minesweeper:
-    __env = []
-    __mines = []
-    _dim = 0
-    _num_mines = 0
-    __counter = 0
 
     def __init__(self, dim, num_mines):
         # making sure mines will fit
@@ -31,7 +26,7 @@ class Minesweeper:
         self.__env = []
         self._dim = dim
         self._num_mines = num_mines
-
+        self.__mines = []
         # creating minesweeper environment
         for row in range(dim):
             self.__env.append([])
@@ -48,6 +43,16 @@ class Minesweeper:
                     self.__env[row][col].mine = True
                     self.__mines.append(self.__env[row][col])
                     mine_set = True
+
+        # for i in range(num_mines):
+        #     mine_set = False
+        #     while not mine_set:
+        #         row = 1
+        #         col = 1
+        #         if not self.__env[row][col].mine:
+        #             self.__env[row][col].mine = True
+        #             self.__mines.append(self.__env[row][col])
+        #             mine_set = True
 
         # Setting clue for each cell
         for row in range(dim):
@@ -98,12 +103,10 @@ class Minesweeper:
 
     # function to query a cell that agent will use
     def query(self, row, col):
-        self.__counter += 1
         return self.__env[row][col].query()
 
     # function to flag a cell that agent will use
     def flag(self, row, col):
-        self.__counter += 1
         self.__env[row][col].flag()
 
     def calculate_score(self):
@@ -111,10 +114,15 @@ class Minesweeper:
         for cell in self.__mines:
             if cell.flagged and not cell.queried:
                 count += 1
-        return 100 - ((count / self._num_mines) * 100)
+        return (count / self._num_mines) * 100
 
     def game_over(self):
-        return self.__counter == self._dim**2
+        count = 0
+        for row in self.__env:
+            for cell in row:
+                if cell.flagged or cell.queried:
+                    count += 1
+        return self._dim**2 == count
 
     def draw(self, screen_size):
         img_size = int(screen_size / self._dim)

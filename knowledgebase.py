@@ -1,7 +1,7 @@
 class A1:
-    knowledge_base = []
 
     def __init__(self, game):
+        self.knowledge_base = []
         # initializing knowledge base
         for row in range(game._dim):
             self.knowledge_base.append([])
