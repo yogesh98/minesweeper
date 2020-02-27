@@ -1,6 +1,20 @@
 from random import randint
 import pygame
 
+d = pygame.image.load("Assets/bd.png")
+f = pygame.image.load("Assets/bf.png")
+m = pygame.image.load("Assets/bm.png")
+p = dict()
+p[0] = pygame.image.load("Assets/bp0.png")
+p[1] = pygame.image.load("Assets/bp1.png")
+p[2] = pygame.image.load("Assets/bp2.png")
+p[3] = pygame.image.load("Assets/bp3.png")
+p[4] = pygame.image.load("Assets/bp4.png")
+p[5] = pygame.image.load("Assets/bp5.png")
+p[6] = pygame.image.load("Assets/bp6.png")
+p[7] = pygame.image.load("Assets/bp7.png")
+p[8] = pygame.image.load("Assets/bp8.png")
+
 
 class Minesweeper:
     __env = []
@@ -14,13 +28,13 @@ class Minesweeper:
         if num_mines > dim**2:
             raise ValueError("Number of Mines Too High!!")
 
-        self.__env = list()
+        self.__env = []
         self._dim = dim
         self._num_mines = num_mines
 
         # creating minesweeper environment
         for row in range(dim):
-            self.__env.append(list())
+            self.__env.append([])
             for col in range(dim):
                 self.__env[row].append(Minecell())
 
@@ -103,20 +117,6 @@ class Minesweeper:
         return self.__counter == self._dim**2
 
     def draw(self, screen_size):
-        d = pygame.image.load("Assets/bd.png")
-        f = pygame.image.load("Assets/bf.png")
-        m = pygame.image.load("Assets/bm.png")
-        p = dict()
-        p[0] = pygame.image.load("Assets/bp0.png")
-        p[1] = pygame.image.load("Assets/bp1.png")
-        p[2] = pygame.image.load("Assets/bp2.png")
-        p[3] = pygame.image.load("Assets/bp3.png")
-        p[4] = pygame.image.load("Assets/bp4.png")
-        p[5] = pygame.image.load("Assets/bp5.png")
-        p[6] = pygame.image.load("Assets/bp6.png")
-        p[7] = pygame.image.load("Assets/bp7.png")
-        p[8] = pygame.image.load("Assets/bp8.png")
-
         img_size = int(screen_size / self._dim)
         surface_dim = img_size * self._dim
         surface = pygame.Surface((surface_dim, surface_dim))
@@ -133,6 +133,25 @@ class Minesweeper:
                 else:
                     surface.blit(pygame.transform.smoothscale(p[cell.value], (img_size, img_size)), (row * img_size, col * img_size))
         return surface
+
+    def draw_single(self, screen_size, row, col):
+        img_size = int(screen_size / self._dim)
+        surface_dim = img_size
+        surface = pygame.Surface((surface_dim, surface_dim))
+
+        cell = self.__env[row][col]
+
+        if not cell.queried and not cell.flagged:
+            surface.blit(pygame.transform.smoothscale(d, (img_size, img_size)), (0, 0))
+        elif cell.mine and cell.queried:
+            surface.blit(pygame.transform.smoothscale(m, (img_size, img_size)), (0, 0))
+        elif cell.flagged:
+            surface.blit(pygame.transform.smoothscale(f, (img_size, img_size)), (0, 0))
+        else:
+            surface.blit(pygame.transform.smoothscale(p[cell.value], (img_size, img_size)), (0, 0))
+
+        return surface, img_size
+
 
 class Minecell:
 

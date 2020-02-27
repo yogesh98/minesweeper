@@ -6,7 +6,8 @@ class A1:
         for row in range(game._dim):
             self.knowledge_base.append([])
             for col in range(game._dim):
-                if (row == 0 and col == 0) or (row == game._dim - 1 and col == game._dim - 1):
+                if (row == 0 and col == 0) or (row == game._dim - 1 and col == game._dim - 1) or \
+                        (row == 0 and col == game._dim - 1) or (row == 0 and col == game._dim - 1):
                     self.knowledge_base[row].append(A1_cell(row, col, True, None, -1, 0, 0, 3))
                 elif row == 0 or row == game._dim - 1 or col == 0 or col == game._dim - 1:
                     self.knowledge_base[row].append(A1_cell(row, col, True, None, -1, 0, 0, 5))
