@@ -120,15 +120,9 @@ class Minesweeper:
         count = 0
         for row in self.__env:
             for cell in row:
-                if cell.flagged or (cell.queried and cell.mine):
+                if cell.flagged or cell.queried:
                     count += 1
-        if self._num_mines == count:
-            for row in self.__env:
-                for cell in row:
-                    if not cell.queried and not cell.flagged:
-                        cell.query()
-            return True
-        return False
+        return self._dim**2 == count
 
     def draw(self, screen_size):
         img_size = int(screen_size / self._dim)

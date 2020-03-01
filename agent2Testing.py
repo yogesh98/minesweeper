@@ -102,12 +102,12 @@ def game_update(game, row, col):
     pygame.event.get()
 
 if __name__ == '__main__':
-    for i in range(30):
-        size = 30
-        game = Minesweeper(size, 120)
-
-        game_full_update(game)
-        agent2(game)
+    # for i in range(30):
+    #     size = 30
+    #     game = Minesweeper(size, 120)
+    #
+    #     game_full_update(game)
+    #     agent2(game)
 
     # for i in range(30):
     #     size = 5
@@ -120,8 +120,15 @@ if __name__ == '__main__':
     running = True
     while running:
         for event in pygame.event.get():
+            print(event)
             if event.type == pygame.QUIT:
                 running = False
+
+        size = 30
+        game = Minesweeper(size, 120)
+
+        game_full_update(game)
+        agent2(game)
 
     pygame.quit()
     quit()

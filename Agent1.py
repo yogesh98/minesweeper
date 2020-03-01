@@ -42,7 +42,10 @@ def agent1(game):
         if len(id_safe) > 0 or len(id_mine) > 0:
 
             # Querying all safe cells and adding clues to knowledge base
-            for current in id_safe:
+            while len(id_safe) > 0:
+                # taking cell out of list and storing it to be queried
+                current = id_safe.pop(0)
+
                 # querying that cell returns if it was a mine and clue
                 query = game.query(current.row, current.col)
 
@@ -52,11 +55,11 @@ def agent1(game):
                 # Updating pygame window (Graphics)
                 game_update(game, current.row, current.col)
 
-                # Removing from safe
-                id_safe.remove(current)
-
             # flagging all mine cells and adding information to knowledge base
-            for cell in id_mine:
+            while len(id_mine) > 0:
+                # taking cell out of list and storing it to be flagged
+                cell = id_mine.pop(0)
+
                 # flagging cell
                 game.flag(cell.row, cell.col)
 
@@ -65,9 +68,6 @@ def agent1(game):
 
                 # Updating pygame window (Graphics)
                 game_update(game, cell.row, cell.col)
-
-                # Removing from identified as mine
-                id_mine.remove(cell)
 
             # using newly gained clues to update add new cells to identified safe or identified mine,
             # if none are found in the next iteration one random
@@ -123,12 +123,13 @@ def game_update(game, row, col):
     img_size = ret_draw[1]
     screen.blit(game_updated, (col * img_size, row * img_size))
     pygame.display.update((col * img_size, row * img_size, img_size, img_size))
+    pygame.event.get()
 
 if __name__ == '__main__':
 
     for i in range(30):
-        size = 19
-        game = Minesweeper(size, 10)
+        size = 30
+        game = Minesweeper(size, 120)
 
         game_full_update(game)
         agent1(game)

@@ -177,8 +177,11 @@ class A2:
                 if len(outerscope) == 1:
                     remove_after.append(outerscope)
 
-        for outerscope in remove_after:
-            self.unsafe.remove(outerscope)
+        for i in remove_after:
+            try:
+                self.unsafe.remove(i)
+            except ValueError:
+                pass
 
     def update(self, row, col, clue, mine):
         current = self.knowledge_base[row][col]
