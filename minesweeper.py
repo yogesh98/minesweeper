@@ -120,9 +120,15 @@ class Minesweeper:
         count = 0
         for row in self.__env:
             for cell in row:
-                if cell.flagged or cell.queried:
+                if cell.flagged or (cell.queried and cell.mine):
                     count += 1
-        return self._dim**2 == count
+        if self._num_mines == count:
+            for row in self.__env:
+                for cell in row:
+                    if not cell.queried and not cell.flagged:
+                        cell.query()
+            return True
+        return False
 
     def draw(self, screen_size):
         img_size = int(screen_size / self._dim)
@@ -133,13 +139,13 @@ class Minesweeper:
             for col in range(len(self.__env)):
                 cell = self.__env[row][col]
                 if not cell.queried and not cell.flagged:
-                    surface.blit(pygame.transform.smoothscale(d, (img_size, img_size)), (row * img_size, col * img_size))
+                    surface.blit(pygame.transform.smoothscale(d, (img_size, img_size)), (col * img_size, row * img_size))
                 elif cell.mine and cell.queried:
-                    surface.blit(pygame.transform.smoothscale(m, (img_size, img_size)), (row * img_size, col * img_size))
+                    surface.blit(pygame.transform.smoothscale(m, (img_size, img_size)), (col * img_size, row * img_size))
                 elif cell.flagged:
-                    surface.blit(pygame.transform.smoothscale(f, (img_size, img_size)), (row * img_size, col * img_size))
+                    surface.blit(pygame.transform.smoothscale(f, (img_size, img_size)), (col * img_size, row * img_size))
                 else:
-                    surface.blit(pygame.transform.smoothscale(p[cell.value], (img_size, img_size)), (row * img_size, col * img_size))
+                    surface.blit(pygame.transform.smoothscale(p[cell.value], (img_size, img_size)), (col * img_size, row * img_size))
         return surface
 
     def draw_single(self, screen_size, row, col):

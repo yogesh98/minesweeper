@@ -92,6 +92,7 @@ def agent1(game):
 
             # checks if game is over if so prints score and ends game
             if game.game_over():
+                game_full_update(game)
                 print(game.calculate_score())
                 game_over = True
 
@@ -120,14 +121,14 @@ def game_update(game, row, col):
     ret_draw = game.draw_single(screen_size, row, col)
     game_updated = ret_draw[0]
     img_size = ret_draw[1]
-    screen.blit(game_updated, (row * img_size, col * img_size))
-    pygame.display.update((row * img_size, col * img_size, img_size, img_size))
+    screen.blit(game_updated, (col * img_size, row * img_size))
+    pygame.display.update((col * img_size, row * img_size, img_size, img_size))
 
 if __name__ == '__main__':
 
     for i in range(30):
-        size = 30
-        game = Minesweeper(size, 200)
+        size = 19
+        game = Minesweeper(size, 10)
 
         game_full_update(game)
         agent1(game)

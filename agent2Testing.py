@@ -1,5 +1,5 @@
+import random
 import pygame
-import time
 from minesweeper import Minesweeper
 from knowledgebase import A2 as KB
 
@@ -19,42 +19,109 @@ screen.fill(WHITE)
 pygame.display.flip()
 pygame.event.get()
 
+# TODO comment code
+# TODO pick better way of picking a square besides random for the first one
+
 
 def agent2(game):
     #initializing knowledge base
-    knowledge_base = KB()
+    knowledge_base = KB(game)
+    game_over = False
 
-    pass
+    analyze_kb(game, knowledge_base)
+    while not game_over:
+        while len(knowledge_base.safe) > 0:
+            cell = knowledge_base.safe.pop(0)
+            clue = game.query(cell.row, cell.col)
+            # game_full_update(game)
+            game_update(game, cell.row, cell.col)
+            knowledge_base.update(cell.row, cell.col, clue[1], clue[0])
+            analyze_kb(game, knowledge_base)
+        # checks if game is over if so prints score and ends game
+        if game.game_over():
+            print(game.calculate_score())
+            game_over = True
 
 def analyze_kb(game, kb):
-    for i in range(len(kb.unsafe)):
-        if kb.unsafe[i][0] == len(kb.unsafe[1:]):
-            for j in kb.unsafe[1:]:
-                j.
+    # Need to check if any clue becomes 0 if it does move all the squares to safe,
+    # check if those squares are in any other set if they are remove them
 
-def game_update(game):
+    # next checking if any clue in unsafe has 0 mines in it, if so it moves that over to safe
+    put_in_safe = []
+    remove_after = []
+    update_as_flagged = []
+    for i in range(len(kb.unsafe)):
+        if kb.unsafe[i][0] == 0:
+            put_in_safe = kb.unsafe[i]
+            remove_after.append(put_in_safe)
+            for j in range(1, len(put_in_safe)):
+                kb.safe.append(put_in_safe[j])
+        else:
+            if len(kb.unsafe[i][1:]) == kb.unsafe[i][0]:
+                remove_after.append(kb.unsafe[i])
+                for cell in kb.unsafe[i][1:]:
+                    game.flag(cell.row, cell.col)
+                    game_update(game, cell.row, cell.col)
+                    update_as_flagged.append(cell)
+    for i in remove_after:
+        kb.unsafe.remove(i)
+    for cell in update_as_flagged:
+        kb.update(cell.row, cell.col, -1, True)
+
+
+    # TODO Change this to be more smarter than just picking a random one
+    if len(kb.safe) == 0:
+        while True:
+            if game.game_over():
+                break
+            # picks random row and col
+            row = random.randint(0, game._dim - 1)
+            col = random.randint(0, game._dim - 1)
+
+            # checks to make sure random row and col is covered if so adds it to safe
+            if kb.knowledge_base[row][col].covered and not kb.knowledge_base[row][col].mine:
+                kb.safe.append(kb.knowledge_base[row][col])
+                break
+
+
+
+# for graphics: will update full screen
+def game_full_update(game):
     game_updated = game.draw(screen_size)
-    screen.fill(WHITE)
     pygame.display.set_mode((game_updated.get_size()[0], game_updated.get_size()[1]))
     screen.blit(game_updated, ORIGIN)
     pygame.display.update()
 
-if __name__ == '__main__':
+# for graphics: will update part of screen specified by the row and col
+def game_update(game, row, col):
+    ret_draw = game.draw_single(screen_size, row, col)
+    game_updated = ret_draw[0]
+    img_size = ret_draw[1]
+    screen.blit(game_updated, (col * img_size, row * img_size))
+    pygame.display.update((col * img_size, row * img_size, img_size, img_size))
+    pygame.event.get()
 
-    size = 30
-    game = Minesweeper(size, 70)
-    game_update(game)
-    for i in range(size):
-        for x in range(size):
-            game.query(i, x)
-    game_update(game)
+if __name__ == '__main__':
+    for i in range(30):
+        size = 30
+        game = Minesweeper(size, 120)
+
+        game_full_update(game)
+        agent2(game)
+
+    # for i in range(30):
+    #     size = 5
+    #     game = Minesweeper(size, 7)
+    #
+    #     game_full_update(game)
+    #     agent2(game)
+    #     # game_full_update(game)
 
     running = True
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-
 
     pygame.quit()
     quit()
