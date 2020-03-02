@@ -140,7 +140,10 @@ if __name__ == '__main__':
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+        game = Minesweeper(size, 120)
 
+        game_full_update(game)
+        agent1(game)
 
     pygame.quit()
     quit()
