@@ -39,8 +39,9 @@ def agent2(game):
             analyze_kb(game, knowledge_base)
         # checks if game is over if so prints score and ends game
         if game.game_over():
-            print(game.calculate_score())
+            score = game.calculate_score()
             game_over = True
+            return score
 
 def analyze_kb(game, kb):
     # Need to check if any clue becomes 0 if it does move all the squares to safe,
@@ -102,6 +103,20 @@ def game_update(game, row, col):
     pygame.event.get()
 
 if __name__ == '__main__':
+
+    density = 0
+    total_score = 0
+    while density < .70:
+        size = 60
+        num_tests = 100
+        for i in range(num_tests):
+            game = Minesweeper(size, int(60**2 * density))
+            score = agent2(game)
+            # game_full_update(game)
+            total_score += score
+        print(total_score/num_tests)
+        total_score = 0
+        density += 0.1
     # for i in range(30):
     #     size = 30
     #     game = Minesweeper(size, 120)

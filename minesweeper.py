@@ -114,6 +114,8 @@ class Minesweeper:
         for cell in self.__mines:
             if cell.flagged and not cell.queried:
                 count += 1
+        if self._num_mines == 0:
+            return 100
         return (count / self._num_mines) * 100
 
     def game_over(self):
