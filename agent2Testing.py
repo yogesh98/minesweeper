@@ -19,7 +19,7 @@ screen.fill(WHITE)
 pygame.display.flip()
 pygame.event.get()
 
-# TODO comment code
+# TODO comment code git git 
 # TODO pick better way of picking a square besides random for the first one
 
 
