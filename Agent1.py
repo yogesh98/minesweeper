@@ -82,6 +82,7 @@ def agent1(game):
                         for neighbor in current.neighbors:
                             if neighbor.covered:
                                 id_mine.append(neighbor)
+
                     # for each clue checks if
                     # the total number of safe neighbors (8 - clue) minus the number of revealed
                     # safe neighbors is the number of hidden neighbors, every hidden neighbor is safe.

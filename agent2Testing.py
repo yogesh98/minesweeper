@@ -71,18 +71,50 @@ def analyze_kb(game, kb):
 
 
     # TODO Change this to be more smarter than just picking a random one
-    if len(kb.safe) == 0:
-        while True:
-            if game.game_over():
-                break
-            # picks random row and col
-            row = random.randint(0, game._dim - 1)
-            col = random.randint(0, game._dim - 1)
 
-            # checks to make sure random row and col is covered if so adds it to safe
-            if kb.knowledge_base[row][col].covered and not kb.knowledge_base[row][col].mine:
-                kb.safe.append(kb.knowledge_base[row][col])
-                break
+    if len(kb.safe) == 0:
+        if len(kb.safe) != 0:
+            min_prob = 100
+            best_chance = None
+            for i in range(len(kb.unsafe)):
+                current = kb.unsafe[i]
+                num_mines = current[0]
+                possible_squares = len(current[1:])
+                probability = (num_mines/possible_squares) * 100
+
+                if min_prob > probability:
+                    min_prob = probability
+                    best_chance = current
+
+            rand = random.randint(1, len(best_chance))
+            kb.safe.append(best_chance[rand])
+
+        else:
+            while True:
+                if game.game_over():
+                    break
+                # picks random row and col
+                row = random.randint(0, game._dim - 1)
+                col = random.randint(0, game._dim - 1)
+
+                # checks to make sure random row and col is covered if so adds it to safe
+                if kb.knowledge_base[row][col].covered and not kb.knowledge_base[row][col].mine:
+                    kb.safe.append(kb.knowledge_base[row][col])
+                    break
+
+
+    # if len(kb.safe) == 0:
+    #     while True:
+    #         if game.game_over():
+    #             break
+    #         # picks random row and col
+    #         row = random.randint(0, game._dim - 1)
+    #         col = random.randint(0, game._dim - 1)
+    #
+    #         # checks to make sure random row and col is covered if so adds it to safe
+    #         if kb.knowledge_base[row][col].covered and not kb.knowledge_base[row][col].mine:
+    #             kb.safe.append(kb.knowledge_base[row][col])
+    #             break
 
 
 
@@ -104,25 +136,26 @@ def game_update(game, row, col):
 
 if __name__ == '__main__':
 
-    density = 0
-    total_score = 0
-    while density < .70:
-        size = 60
-        num_tests = 100
-        for i in range(num_tests):
-            game = Minesweeper(size, int(60**2 * density))
-            score = agent2(game)
-            # game_full_update(game)
-            total_score += score
-        print(total_score/num_tests)
-        total_score = 0
-        density += 0.1
-    # for i in range(30):
-    #     size = 30
-    #     game = Minesweeper(size, 120)
-    #
-    #     game_full_update(game)
-    #     agent2(game)
+    # density = 0
+    # total_score = 0
+    # while density < .70:
+    #     size = 60
+    #     num_tests = 1
+    #     for i in range(num_tests):
+    #         game = Minesweeper(size, int(60**2 * density))
+    #         game_full_update(game)
+    #         score = agent2(game)
+    #         total_score += score
+    #     print(total_score/num_tests)
+    #     total_score = 0
+    #     density += 0.1
+
+    for i in range(30):
+        size = 30
+        game = Minesweeper(size, 120)
+
+        game_full_update(game)
+        print(agent2(game))
 
     # for i in range(30):
     #     size = 5
