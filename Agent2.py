@@ -3,6 +3,7 @@ import pygame
 from minesweeper import Minesweeper
 from knowledgebase import A2 as KB
 
+# Color tuples for pygame
 WHITE = (255, 255, 255)
 GRAY = (128, 128, 128)
 BLACK = (0, 0, 0)
@@ -12,6 +13,7 @@ BLUE = (0, 0, 255)
 
 ORIGIN = (0, 0)
 
+# Stuff for graphics
 pygame.init()
 screen_size = 960
 screen = pygame.display.set_mode((screen_size, screen_size))
@@ -19,11 +21,10 @@ screen.fill(WHITE)
 pygame.display.flip()
 pygame.event.get()
 
-# TODO comment code
 
 
 def agent2(game):
-    #initializing knowledge base
+    # initializing knowledge base
     knowledge_base = KB(game)
 
     # variable to stop querying if the game is over (All mines have been queried or flagged
@@ -109,7 +110,6 @@ def analyze_kb(game, kb):
         for cell in update_as_flagged:
             kb.update(cell.row, cell.col, -1, True)
 
-
     # If after knowledgebase analysis there are no safe cells it will find the cell with the least probability
     if len(kb.safe) == 0:
 
@@ -171,23 +171,23 @@ def game_update(game, row, col):
 
 if __name__ == '__main__':
 
-    # density = 0
-    # total_score = 0
-    # while density < .70:
-    #     size = 60
-    #     num_tests = 1
-    #     for i in range(num_tests):
-    #         game = Minesweeper(size, int(60**2 * density))
-    #         game_full_update(game)
-    #         score = agent2(game)
-    #         total_score += score
-    #     print(total_score/num_tests)
-    #     total_score = 0
-    #     density += 0.1
-
+    density = 0
+    total_score = 0
+    while density <= .70:
+        size = 30
+        num_tests = 100
+        for i in range(num_tests):
+            game = Minesweeper(size, int((size**2) * density))
+            game_full_update(game)
+            score = agent2(game)
+            total_score += score
+        print(str(density) + ", " + str(total_score/num_tests))
+        total_score = 0
+        density += 0.05
+        density = round(density, 2)
     for i in range(30):
         size = 30
-        game = Minesweeper(size, 120)
+        game = Minesweeper(size, 90)
 
         game_full_update(game)
         print(agent2(game))
@@ -207,11 +207,11 @@ if __name__ == '__main__':
             if event.type == pygame.QUIT:
                 running = False
 
-        size = 30
-        game = Minesweeper(size, 120)
-
-        game_full_update(game)
-        agent2(game)
+        # size = 30
+        # game = Minesweeper(size, 120)
+        #
+        # game_full_update(game)
+        # agent2(game)
 
     pygame.quit()
     quit()
