@@ -152,9 +152,144 @@ def analyze_kb(game, kb):
                     break
 
 
+def agent2_w_num_mines(game):
+    # initializing knowledge base
+    knowledge_base = KB(game)
+
+    # variable to stop querying if the game is over (All mines have been queried or flagged
+    game_over = False
+
+    # Picks first move
+    analyze_kb_w_num_mines(game, knowledge_base)
+
+    # game loop, queries till game is over
+    while not game_over:
+
+        # Checks if there is any cells that are safe and can be queried
+        while len(knowledge_base.safe) > 0:
+
+            # Takes off the first cell to query
+            cell = knowledge_base.safe.pop(0)
+
+            # querying that cell returns if it was a mine and clue
+            clue = game.query(cell.row, cell.col)
+
+            # Updating pygame window (Graphics)
+            game_update(game, cell.row, cell.col)
+
+            # Updating Knowledgebase (consists of updating information about querried cells and making deductions)
+            knowledge_base.update(cell.row, cell.col, clue[1], clue[0])
+
+            # Using Deductions to add safe cells to safe
+            analyze_kb_w_num_mines(game, knowledge_base)
+
+        # checks if game is over if so prints score and ends game
+        if game.game_over():
+            score = game.calculate_score()
+            game_over = True
+            return score
+
+#Analyze knowledgebase with access to num mines
+def analyze_kb_w_num_mines(game, kb):
+
+    # Variable to tell if an action has been made.
+    action = True
+
+    # knowledgebase analysis will happen again with the new deductions from each action
+    while action:
+        action = False
+        # List of Lists in unsafe to be removed
+        remove_after = []
+
+        # List of cells that have been flagged and need to be removed
+        update_as_flagged = []
+
+        # Using deductions made in knowledgebase to make choice on which cells can be querried
+        for i in range(len(kb.unsafe)):
+            # Checking each list in Unsafe and seeing if there is 0 mines within those cells
+            if kb.unsafe[i][0] == 0:
+                action = True
+                # if there are no mines within those cells it will add them to safe and add them
+                # to a remove_after list to remove them. Can not remove on the spot because it will mess up the for loop
+                remove_after.append(kb.unsafe[i])
+                for j in range(1, len(kb.unsafe[i])):
+                    kb.safe.append(kb.unsafe[i][j])
+
+            # If there is still mines within those cells it will check if the number of cells is equal to the number of
+            # mines. If so it will flag all those cells
+            elif len(kb.unsafe[i][1:]) == kb.unsafe[i][0]:
+                action = True
+                # adds to remove after list
+                remove_after.append(kb.unsafe[i])
+
+                # for each cell in the list it will flag those cells
+                for cell in kb.unsafe[i][1:]:
+                    # Flag cell
+                    game.flag(cell.row, cell.col)
+                    # Update pygame window (Graphics)
+                    game_update(game, cell.row, cell.col)
+                    # Add cell to a list so that the KB can be updated
+                    update_as_flagged.append(cell)
+        # Removing all lists in unsafe that need to be removed
+        for i in remove_after:
+            kb.unsafe.remove(i)
+
+        # Updates KB with cells that have been flagged and makes new deductions based on these
+        for cell in update_as_flagged:
+            kb.update(cell.row, cell.col, -1, True)
+
+    # If after knowledgebase analysis there are no safe cells it will find the cell with the least probability
+    if len(kb.safe) == 0:
+
+        # if unsafe list is not 0 it can find cell with least probability otherwise has to pick random
+        min_prob = 100
+        best_chance = None
+        if len(kb.unsafe) != 0:
+            # checks probability of selecting a mine from all lists in unsafe
+            for i in range(len(kb.unsafe)):
+                # calculating probability from the list
+                current = kb.unsafe[i]
+                num_mines = current[0]
+                possible_squares = len(current[1:])
+                probability = (num_mines/possible_squares) * 100
+
+                # if this probability is less the one stored in min swaps min and best chance for this one
+                if min_prob > probability:
+                    min_prob = probability
+                    best_chance = current
+
+        num_mines_remaining = game._num_mines
+        accounted_for = False
+        remaining_cells = []
+        for row in kb.knowledge_base:
+            for cell in row:
+                if cell.mine:
+                    num_mines_remaining -= 1
+                    continue
+                if not cell.covered:
+                    continue
+                for l in kb.unsafe:
+                    if cell in l[1:]:
+                        accounted_for = True
+
+                if not accounted_for:
+                    remaining_cells.append(cell)
+
+                accounted_for = False
+
+        probability = (num_mines_remaining/len(remaining_cells)) * 100
+        if min_prob > probability:
+            min_prob = probability
+            best_chance = remaining_cells
+
+
+        # Picks random cell from the best chance and adds it to safe so that the agent will query it
+        rand = random.randint(1, len(best_chance) - 1)
+        kb.safe.append(best_chance[rand])
 
 # for graphics: will update full screen
 def game_full_update(game):
+    return
     game_updated = game.draw(screen_size)
     pygame.display.set_mode((game_updated.get_size()[0], game_updated.get_size()[1]))
     screen.blit(game_updated, ORIGIN)
@@ -162,6 +297,7 @@ def game_full_update(game):
 
 # for graphics: will update part of screen specified by the row and col
 def game_update(game, row, col):
+    return
     ret_draw = game.draw_single(screen_size, row, col)
     game_updated = ret_draw[0]
     img_size = ret_draw[1]
@@ -171,26 +307,26 @@ def game_update(game, row, col):
 
 if __name__ == '__main__':
 
+    size = 30
     density = 0
     total_score = 0
-    while density <= .70:
-        size = 30
-        num_tests = 100
+    while density <= 1:
+        num_tests = 200
         for i in range(num_tests):
             game = Minesweeper(size, int((size**2) * density))
             game_full_update(game)
-            score = agent2(game)
+            score = agent2_w_num_mines(game)
             total_score += score
         print(str(density) + ", " + str(total_score/num_tests))
         total_score = 0
         density += 0.05
         density = round(density, 2)
-    for i in range(30):
-        size = 30
-        game = Minesweeper(size, 90)
-
-        game_full_update(game)
-        print(agent2(game))
+    # for i in range(30):
+    #     size = 30
+    #     game = Minesweeper(size, 90)
+    #
+    #     game_full_update(game)
+    #     print(agent2(game))
 
     # for i in range(30):
     #     size = 5
@@ -203,7 +339,7 @@ if __name__ == '__main__':
     running = True
     while running:
         for event in pygame.event.get():
-            print(event)
+            # print(event)
             if event.type == pygame.QUIT:
                 running = False
 

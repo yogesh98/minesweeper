@@ -113,6 +113,7 @@ def agent1(game):
 
 # for graphics: will update full screen
 def game_full_update(game):
+    return
     game_updated = game.draw(screen_size)
     pygame.display.set_mode((game_updated.get_size()[0], game_updated.get_size()[1]))
     screen.blit(game_updated, ORIGIN)
@@ -120,6 +121,7 @@ def game_full_update(game):
 
 # for graphics: will update part of screen specified by the row and col
 def game_update(game, row, col):
+    return
     ret_draw = game.draw_single(screen_size, row, col)
     game_updated = ret_draw[0]
     img_size = ret_draw[1]
@@ -129,19 +131,20 @@ def game_update(game, row, col):
 
 if __name__ == '__main__':
 
+    size = 30
     density = 0
     total_score = 0
-    while density < .70:
-        size = 60
-        num_tests = 100
+    while density <= 1:
+        num_tests = 200
         for i in range(num_tests):
-            game = Minesweeper(size, int(60**2 * density))
-            score = agent1(game)
+            game = Minesweeper(size, int((size**2) * density))
             game_full_update(game)
+            score = agent1(game)
             total_score += score
-        print(total_score/num_tests)
+        print(str(density) + ", " + str(total_score/num_tests))
         total_score = 0
-        density += 0.1
+        density += 0.05
+        density = round(density, 2)
 
 
 
