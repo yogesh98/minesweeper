@@ -82,6 +82,7 @@ def agent1(game):
                         for neighbor in current.neighbors:
                             if neighbor.covered:
                                 id_mine.append(neighbor)
+
                     # for each clue checks if
                     # the total number of safe neighbors (8 - clue) minus the number of revealed
                     # safe neighbors is the number of hidden neighbors, every hidden neighbor is safe.
@@ -93,7 +94,8 @@ def agent1(game):
             # checks if game is over if so prints score and ends game
             if game.game_over():
                 game_full_update(game)
-                print(game.calculate_score())
+                score = game.calculate_score()
+                return score
                 game_over = True
 
         # if there were no definitive safe cells or mine cells it picks a random one
@@ -127,15 +129,26 @@ def game_update(game, row, col):
 
 if __name__ == '__main__':
 
-    for i in range(30):
-        size = 30
-        game = Minesweeper(size, 120)
+    density = 0
+    total_score = 0
+    while density < .70:
+        size = 60
+        num_tests = 100
+        for i in range(num_tests):
+            game = Minesweeper(size, int(60**2 * density))
+            score = agent1(game)
+            game_full_update(game)
+            total_score += score
+        print(total_score/num_tests)
+        total_score = 0
+        density += 0.1
 
-        game_full_update(game)
-        agent1(game)
+
+
         # game_full_update(game)
 
     running = True
+
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

@@ -44,16 +44,6 @@ class Minesweeper:
                     self.__mines.append(self.__env[row][col])
                     mine_set = True
 
-        # for i in range(num_mines):
-        #     mine_set = False
-        #     while not mine_set:
-        #         row = 1
-        #         col = 1
-        #         if not self.__env[row][col].mine:
-        #             self.__env[row][col].mine = True
-        #             self.__mines.append(self.__env[row][col])
-        #             mine_set = True
-
         # Setting clue for each cell
         for row in range(dim):
             for col in range(dim):
@@ -109,13 +99,17 @@ class Minesweeper:
     def flag(self, row, col):
         self.__env[row][col].flag()
 
+    # function to calculate score
     def calculate_score(self):
         count = 0
         for cell in self.__mines:
             if cell.flagged and not cell.queried:
                 count += 1
+        if self._num_mines == 0:
+            return 100
         return (count / self._num_mines) * 100
 
+    # function to check if game is over
     def game_over(self):
         count = 0
         for row in self.__env:
@@ -124,6 +118,7 @@ class Minesweeper:
                     count += 1
         return self._dim**2 == count
 
+    # Function for graphics to draw the minesweeper game
     def draw(self, screen_size):
         img_size = int(screen_size / self._dim)
         surface_dim = img_size * self._dim
@@ -142,6 +137,7 @@ class Minesweeper:
                     surface.blit(pygame.transform.smoothscale(p[cell.value], (img_size, img_size)), (col * img_size, row * img_size))
         return surface
 
+    # Function for graphics to draw the minesweeper game (only updates portion specified)
     def draw_single(self, screen_size, row, col):
         img_size = int(screen_size / self._dim)
         surface_dim = img_size
