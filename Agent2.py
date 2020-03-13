@@ -311,51 +311,59 @@ def game_update(game, row, col):
 
 if __name__ == '__main__':
 
-    # game = Minesweeper(3, 1)
-    # game_full_update(game)
-    # score = agent2_w_num_mines(game)
+    try:
+        ipt = int(input("To run a single game of minesweeper using AGENT 2 enter 0 "
+                        "otherwise to run our testing method to figure out success rate per density enter 1 \n"))
+    except ValueError:
+        print("Incorrect Entry")
 
-    size = 30
-    density = 0
-    total_score = 0
-    while density <= 1:
-        num_tests = 100
-        for i in range(num_tests):
-            game = Minesweeper(size, int((size**2) * density))
-            game_full_update(game)
-            score = agent2_w_num_mines(game)
-            total_score += score
-        print(str(density) + ", " + str(total_score/num_tests))
+    if ipt == 0:
+        try:
+            size = int(input("Enter the size, for example enter 30 for a 30 x 30 grid\n"))
+        except ValueError:
+            print("Incorrect Entry")
+
+        try:
+            num_mines = int(input("Enter the number of mines\n"))
+        except ValueError:
+            print("Incorrect Entry")
+
+        game = Minesweeper(size, num_mines)
+        game_full_update(game)
+        score = agent2(game)
+
+        print("Score: " + str(score))
+
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+
+    elif ipt == 1:
+        size = 30
+        density = 0
         total_score = 0
-        density += 0.05
-        density = round(density, 2)
-    # for i in range(30):
-    #     size = 30
-    #     game = Minesweeper(size, 90)
-    #
-    #     game_full_update(game)
-    #     print(agent2(game))
+        while density <= 1:
+            num_tests = 100
+            for i in range(num_tests):
+                game = Minesweeper(size, int((size**2) * density))
+                game_full_update(game)
+                score = agent2(game)
+                total_score += score
+            print(str(density) + ", " + str(total_score/num_tests))
+            total_score = 0
+            density += 0.05
+            density = round(density, 2)
 
-    # for i in range(30):
-    #     size = 5
-    #     game = Minesweeper(size, 7)
-    #
-    #     game_full_update(game)
-    #     agent2(game)
-    #     # game_full_update(game)
-
-    running = True
-    while running:
-        for event in pygame.event.get():
-            # print(event)
-            if event.type == pygame.QUIT:
-                running = False
-
-        # size = 30
-        # game = Minesweeper(size, 120)
-        #
-        # game_full_update(game)
-        # agent2(game)
+        running = True
+        while running:
+            for event in pygame.event.get():
+                # print(event)
+                if event.type == pygame.QUIT:
+                    running = False
+    else:
+        print("Quiting")
 
     pygame.quit()
     quit()
