@@ -183,11 +183,16 @@ def agent2_w_num_mines(game):
             # Using Deductions to add safe cells to safe
             analyze_kb_w_num_mines(game, knowledge_base)
 
+        # if len(knowledge_base.safe) == 0 and len(knowledge_base.unsafe) > 0:
+        #     analyze_kb_w_num_mines(game, knowledge_base)
+
         # checks if game is over if so prints score and ends game
         if game.game_over():
             score = game.calculate_score()
             game_over = True
             return score
+        elif len(knowledge_base.safe) == 0 and len(knowledge_base.unsafe) > 0:
+            analyze_kb_w_num_mines(game, knowledge_base)
 
 #Analyze knowledgebase with access to num mines
 def analyze_kb_w_num_mines(game, kb):
@@ -243,7 +248,7 @@ def analyze_kb_w_num_mines(game, kb):
 
         # if unsafe list is not 0 it can find cell with least probability otherwise has to pick random
         min_prob = 100
-        best_chance = None
+        best_chance = []
         if len(kb.unsafe) != 0:
             # checks probability of selecting a mine from all lists in unsafe
             for i in range(len(kb.unsafe)):
@@ -260,7 +265,7 @@ def analyze_kb_w_num_mines(game, kb):
 
         num_mines_remaining = game._num_mines
         accounted_for = False
-        remaining_cells = []
+        remaining_cells = [0]
         for row in kb.knowledge_base:
             for cell in row:
                 if cell.mine:
@@ -276,20 +281,20 @@ def analyze_kb_w_num_mines(game, kb):
                     remaining_cells.append(cell)
 
                 accounted_for = False
-
-        probability = (num_mines_remaining/len(remaining_cells)) * 100
-        if min_prob > probability:
-            min_prob = probability
-            best_chance = remaining_cells
+        if len(remaining_cells) > 1:
+            probability = (num_mines_remaining/len(remaining_cells)) * 100
+            if min_prob > probability:
+                min_prob = probability
+                best_chance = remaining_cells
 
 
         # Picks random cell from the best chance and adds it to safe so that the agent will query it
-        rand = random.randint(1, len(best_chance) - 1)
-        kb.safe.append(best_chance[rand])
+        if len(best_chance) != 0:
+            rand = random.randint(1, len(best_chance) - 1)
+            kb.safe.append(best_chance[rand])
 
 # for graphics: will update full screen
 def game_full_update(game):
-    return
     game_updated = game.draw(screen_size)
     pygame.display.set_mode((game_updated.get_size()[0], game_updated.get_size()[1]))
     screen.blit(game_updated, ORIGIN)
@@ -297,7 +302,6 @@ def game_full_update(game):
 
 # for graphics: will update part of screen specified by the row and col
 def game_update(game, row, col):
-    return
     ret_draw = game.draw_single(screen_size, row, col)
     game_updated = ret_draw[0]
     img_size = ret_draw[1]
@@ -307,11 +311,15 @@ def game_update(game, row, col):
 
 if __name__ == '__main__':
 
+    # game = Minesweeper(3, 1)
+    # game_full_update(game)
+    # score = agent2_w_num_mines(game)
+
     size = 30
     density = 0
     total_score = 0
     while density <= 1:
-        num_tests = 200
+        num_tests = 100
         for i in range(num_tests):
             game = Minesweeper(size, int((size**2) * density))
             game_full_update(game)
